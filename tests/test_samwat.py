@@ -8,7 +8,7 @@ test_samwat
 Tests for `bikram.bikram` module.
 """
 
-
+import sys
 import unittest
 from datetime import date, timedelta
 
@@ -26,6 +26,10 @@ class TestSamwat(unittest.TestCase):
 
         self.bs_today = samwat.today()
         self.ad_today = date.today()
+
+        if sys.version_info < (3, 0):
+            # in python version less than 3 assertRaisesRegex is assertRaisesRegexp
+            self.assertRaisesRegex = self.assertRaisesRegexp
 
     def test_today(self):
         self.assertEqual(self.bs_today.ad, date.today())

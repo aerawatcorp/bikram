@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import total_ordering
 from datetime import date, timedelta
-from .constants import *
+from .constants import BS_YEAR_TO_MONTHS
 
 __all__ = ['samwat', 'convert_ad_to_bs', 'convert_bs_to_ad']
 
@@ -87,14 +87,16 @@ class samwat(object):
             return self.ad == other
         elif isinstance(other, samwat):
             return self.as_tuple() == other.as_tuple()
-        raise TypeError('Cannot compare bikram.samwat with {}'.format(type(other).__name__))
+        raise TypeError('Cannot compare bikram.samwat with {}'
+                        .format(type(other).__name__))
 
     def __lt__(self, other):
         if isinstance(other, date):
             return self.ad <= other
         elif isinstance(other, samwat):
             return self.as_tuple() < other.as_tuple()
-        raise TypeError('Cannot compare bikram.samwat with {}'.format(type(other).__name__))
+        raise TypeError('Cannot compare bikram.samwat with {}'
+                        .format(type(other).__name__))
 
     @staticmethod
     def today():
