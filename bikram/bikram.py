@@ -146,7 +146,7 @@ def convert_bs_to_ad(date_in_bs):
     '''
     Expects a `bikram.samwat` instance and returns an equivalent `datetime.date` instance
     '''
-    if 2000 > date_in_bs.year or date_in_ad.year > 2089:
+    if 2000 > date_in_bs.year or date_in_bs.year > 2089:
         raise ValueError('B.S. year is out of range...')
 
     days = date_in_bs.day + sum(BS_YEAR_TO_MONTHS[date_in_bs.year][1:date_in_bs.month])
