@@ -122,7 +122,7 @@ def convert_ad_to_bs(date_in_ad):
     '''
     Expects a `datetime.date` instance and returns an equivalent `bikram.samwat` instance
     '''
-    if 1944 > date_in_ad.year > 2033:
+    if 1944 > date_in_ad.year or date_in_ad.year > 2033:
         raise ValueError('A.D. year is out of range...')
 
     diff_days = (date_in_ad - ad_scale).days
@@ -146,7 +146,7 @@ def convert_bs_to_ad(date_in_bs):
     '''
     Expects a `bikram.samwat` instance and returns an equivalent `datetime.date` instance
     '''
-    if 2000 > date_in_bs.year > 2089:
+    if 2000 > date_in_bs.year or date_in_ad.year > 2089:
         raise ValueError('B.S. year is out of range...')
 
     days = date_in_bs.day + sum(BS_YEAR_TO_MONTHS[date_in_bs.year][1:date_in_bs.month])
