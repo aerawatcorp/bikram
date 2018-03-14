@@ -1,5 +1,5 @@
 Welcome to Python Bikram Samwat's documentation!
-======================================
+================================================
 
 Contents:
 
@@ -9,8 +9,9 @@ Contents:
    readme
    installation
    usage
+   bikram
    contributing
-   authorshistory
+   history
 
 Indices and tables
 ==================

@@ -13,22 +13,26 @@ Python Bikram Samwat
         :target: https://bikram.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/poudel/bikram/shield.svg
-     :target: https://pyup.io/repos/github/poudel/bikram/
-     :alt: Updates
 
-
-Utilities to work with Bikram/Vikram Samwat dates.
-
-
-* Free software: GNU General Public License v3
-* Documentation: https://bikram.readthedocs.io.
+Utilities to work with Bikram/Vikram Samwat dates. Documentation: https://bikram.readthedocs.io.
 
 
 Features
 --------
 
-* TODO
+* Convert Bikram Samwat dates to AD and vice versa.
+  Intended to be useful for Nepali software developers.
+* Well tested and readable source code.
+* Date operations, i.e. addition/subtraction,
+  supported with :code:`datetime.date` and :code:`datetime.timedelta` within range.
+* Supports comparison with :code:`datetime.date` and :code:`datetime.timedelta` objects.
+
+
+Caveats
+-------
+
+* Is not very helpful if the date falls outside the map of BS years to days in month.
+
 
 Credits
 ---------

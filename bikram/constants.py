@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+"""
+This file has the necessary constants for date conversion.
+"""
 from collections import OrderedDict
 
 __all__ = [

@@ -1,0 +1,19 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+
+
+[dev-packages]
+
+bumpversion = "*"
+"flake8" = "*"
+coverage = "*"
+sphinx = "*"
+codecov = "*"
+sphinx-rtd-theme = "*"

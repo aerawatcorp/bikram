@@ -8,19 +8,13 @@ Installation
 Stable release
 --------------
 
-To install Python Bikram Samwat, run this command in your terminal:
+To install, run this command in your terminal:
 
 .. code-block:: console
 
     $ pip install bikram
 
-This is the preferred method to install Python Bikram Samwat, as it will always install the most recent stable release. 
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
-
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+This is the recommended method of installation, as it will always install the most recent stable release. 
 
 
 From sources
@@ -33,19 +27,6 @@ You can either clone the public repository:
 .. code-block:: console
 
     $ git clone git://github.com/poudel/bikram
-
-Or download the `tarball`_:
-
-.. code-block:: console
-
-    $ curl  -OL https://github.com/poudel/bikram/tarball/master
-
-Once you have a copy of the source, you can install it with:
-
-.. code-block:: console
-
-    $ python setup.py install
-
 
 .. _Github repo: https://github.com/poudel/bikram
 .. _tarball: https://github.com/poudel/bikram/tarball/master
