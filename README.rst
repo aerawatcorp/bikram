@@ -17,6 +17,14 @@ Python Bikram Samwat
 Utilities to work with Bikram/Vikram Samwat dates. Documentation: https://bikram.readthedocs.io.
 
 
+Getting started
+---------------
+
+* Install the :code:`bikram` package: https://bikram.readthedocs.io/installation.html.
+* Read the usage guide: https://bikram.readthedocs.io/usage.html.
+* Read the module reference guide: https://bikram.readthedocs.io/bikram.html.
+
+
 Features
 --------
 
