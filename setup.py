@@ -19,7 +19,7 @@ test_requirements = [
 
 setup(
     name='bikram',
-    version='1.0.0',
+    version='2.0.0',
     description="Utilities to work with Bikram/Vikram Samwat dates.",
     long_description=readme + '\n\n' + history,
     author="keshaB Paudel",
