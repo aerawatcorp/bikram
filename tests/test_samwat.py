@@ -37,6 +37,60 @@ class TestSamwat(unittest.TestCase):
     def test_from_ad(self):
         self.assertEqual(samwat.from_ad(self.ad_date), self.bs_date)
 
+    def test_from_iso(self):
+        self.assertEqual(samwat.from_iso("2073-07-28"), samwat(2073, 7, 28))
+
+        invalid_datestrs = [
+            "207307,28",
+            "rubbish",
+        ]
+
+        for datestr in invalid_datestrs:
+            with self.subTest(datestr=datestr):
+                with self.assertRaisesRegex(ValueError, "Invalid datestr provided."):
+                    samwat.from_iso(datestr)
+
+    def test_parse(self):
+        patterns = [
+            ("2073-07-28", "%Y-%m-%d"),
+            ("2073/07-28", "%Y/%m-%d"),
+            ("2073/07\\28", "%Y/%m\\%d"),
+            ("2073.07.28", "%Y.%m.%d"),
+
+            ("07-2073-28", "%m-%Y-%d"),
+            ("28-07-2073", "%d-%m-%Y"),
+            ("07-28-2073", "%m-%d-%Y"),
+            ("07,28,2073", "%m,%d,%Y"),
+
+            ("73-07-28", "%y-%m-%d"),
+
+            ("2073-7-28", "%Y-%-m-%d"),
+            ("2073,Kartik,28", "%Y,%B,%d"),
+            ("2073,Kar,28", "%Y,%B,%d"),
+            ("2073,kartik,28", "%Y,%B,%d"),
+            ("2073,kar,28", "%Y,%B,%d"),
+            ("2073,कार्तिक,28", "%Y,%B,%d"),
+
+            ("2073 07 28", "%Y %m %d"),
+
+            # test devanagari digits
+            ("२०७३ ०७ २८", "%Yne %mne %dne"),
+            ("२०७३ ७ २८", "%Yne %-mne %dne"),
+        ]
+        for datestr, pattern in patterns:
+            with self.subTest(datestr=datestr, pattern=pattern):
+                self.assertEqual(samwat.parse(datestr, pattern), samwat(2073, 7, 28))
+
+    def test_parse_unique_codes(self):
+        invalid_patterns = [
+            ("%Y-%d-%-d", "2073-07-28"),
+            ("%Y-%m-%-m", "2073-07-28"),
+        ]
+        for pattern, datestr in invalid_patterns:
+            with self.subTest(datestr=datestr, pattern=pattern):
+                with self.assertRaisesRegex(ValueError, 'Invalid number of date codes'):
+                    samwat.parse(datestr, pattern)
+
     def test_ad(self):
         '''
         Make sure that a samwat.ad always returns a correct A.D. date

@@ -11,12 +11,24 @@ objects. Please import them as follows:
 >>> from datetime import date, timedelta
 
 """
+
+import re
+from typing import List
 from functools import total_ordering
 from datetime import date, timedelta
-from .constants import BS_YEAR_TO_MONTHS
+from .constants import (
+    BS_YEAR_TO_MONTHS,
+    month_name_re_fragment,
+    month_name_to_numbers,
+    dev_digits_re_fragment,
+    DEV_TO_ENG_DIGITS,
+)
 
 
 __all__ = ['samwat', 'convert_ad_to_bs', 'convert_bs_to_ad']
+
+
+_PATTERNS_CACHE = {}
 
 
 @total_ordering
@@ -188,6 +200,148 @@ class samwat:
         Expects a `datetime.date` then returns an equivalent `bikram.samwat` instance
         '''
         return convert_ad_to_bs(ad_date)
+
+    _code_patterns = {
+        "%d": r"(?P<day>\d{2})",
+        "%-d": r"(?P<day>\d{1,2})",
+
+        "%dne": rf"(?P<ned>{dev_digits_re_fragment}{{2}})",
+        "%-dne": rf"(?P<ned>{dev_digits_re_fragment}{{1,2}})",
+
+        "%m": r"(?P<m>\d{2})",
+        "%-m": r"(?P<m>\d{1,2})",
+
+        "%mne": rf"(?P<nem>{dev_digits_re_fragment}{{2}})",
+        "%-mne": rf"(?P<nem>{dev_digits_re_fragment}{{1,2}})",
+
+        "%y": r"(?P<sy>\d{2})",
+        "%Y": r"(?P<y>\d{4})",
+
+        "%yne": rf"(?P<ney>{dev_digits_re_fragment}{{2}})",
+        "%Yne": rf"(?P<ney>{dev_digits_re_fragment}{{4}})",
+
+        "%B": rf"(?P<ml>{month_name_re_fragment})",
+    }
+    _code_re = re.compile(r"(?P<code>%-?\w{1,3})")
+
+    @classmethod
+    def _get_pattern_from_codes(cls, codes: List[str]):
+        patterns = []
+
+        for code in codes:
+            try:
+                pattern_str = cls._code_patterns[code]
+            except KeyError:
+                raise ValueError(f"Invalid code: {code}")
+
+            patterns.append(pattern_str)
+
+        pattern = re.compile(r".".join(patterns))
+        return pattern
+
+    @staticmethod
+    def _translate_number_from_devanagari(numberstr: str) -> int:
+        if not numberstr:
+            raise ValueError("Trying to translate invalid numberstr from devanagari")
+
+        digits = []
+        for dev_digit in numberstr:
+            digits.append(str(DEV_TO_ENG_DIGITS[dev_digit]))
+        return int("".join(digits))
+
+    @classmethod
+    def parse(cls, datestr: str, parsestr: str):
+        """
+        parse bikram samwat date string and return a `bikram.samwat` instance.
+
+        - "%d": zero padded day of month, 07
+        - "%-d": padded day of month, 7
+
+        - "%dne": zero-padded day of month in devanagari digits, ०७
+        - "%-dne": day of month in devanagari digits, ७
+
+        - "%m": zero-padded month number, 01
+        - "%-m": month number, 1
+
+        - "%mne": zero-added month number in devanagari digits, ०१
+        - "%-mne": month number in devanagari digits, १
+
+        - "%y": two digit year, 73 implies 2073
+        - "%Y": four digit year, 2073
+
+        - "%yne": two digit year in devanagari digits, ७३ implies २०७३
+        - "%Yne": four digit year in devanagari digits, २०७३
+
+        - "%B": name of bikram samwat months in English spelling, English spelling short
+            (abbr. by first three letters), Devanagari spelling. Any one of the list below:
+
+        ```
+            [
+                'वैशाख', 'जेष्ठ', 'आषाढ़', 'श्रावण', 'भाद्र', 'आश्विन', 'कार्तिक',
+                'मंसिर', 'पौष', 'माघ', 'फाल्गुन', 'चैत्र',
+
+                'Baisakh', 'Jestha', 'Ashadh', 'Shrawan', 'Bhadra', 'Ashwin', 'Kartik',
+                'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra',
+
+                'Bai', 'Jes', 'Ash', 'Shr', 'Bha', 'Ash', 'Kar',
+                'Man', 'Pou', 'Mag', 'Fal', 'Cha',
+            ]
+        ```
+        """
+        codes = cls._code_re.findall(parsestr)
+
+        unique_codes = list(map(lambda c: c.replace("%", "").replace("-", ""), codes))
+
+        if len(set(unique_codes)) != 3:
+            raise ValueError("Invalid number of date codes in the parse pattern")
+
+        # patterns are usually static across a codebase -- this is a
+        # micro optimization to avoid calling re.compile for same
+        # parsestr all the time
+        # and using try..except is faster if `parse` is being called many times
+        try:
+            pattern = _PATTERNS_CACHE[parsestr]
+        except KeyError:
+            pattern = cls._get_pattern_from_codes(codes)
+            _PATTERNS_CACHE[parsestr] = pattern
+
+        match = pattern.match(datestr)
+        if not match:
+            raise ValueError(f"Could not match {parsestr} with {datestr}")
+
+        date_dict = match.groupdict()
+        if not len(date_dict):
+            raise ValueError("Something is wrong with the pattern")
+
+        if 'ml' in date_dict:
+            ml = date_dict['ml']
+            date_dict['m'] = month_name_to_numbers[ml]
+
+        if 'sy' in date_dict:
+            date_dict['y'] = int(f"20{date_dict['sy']}")
+
+        if 'ney' in date_dict:
+            date_dict['y'] = cls._translate_number_from_devanagari(date_dict['ney'])
+
+        if 'nem' in date_dict:
+            date_dict['m'] = cls._translate_number_from_devanagari(date_dict['nem'])
+
+        if 'ned' in date_dict:
+            date_dict['day'] = cls._translate_number_from_devanagari(date_dict['ned'])
+
+        datetuple = list(map(int, [date_dict['y'], date_dict['m'], date_dict['day']]))
+        return cls(*datetuple)
+
+    @classmethod
+    def from_iso(cls, datestr: str):
+        '''
+        Naive way to parse date from a ISO8601 (YYYY-MM-DD) BS date
+        string and return `bikram.samwat` instance.
+        '''
+        try:
+            return cls.parse(datestr, "%Y-%m-%d")
+        except ValueError as err:
+            raise ValueError(f"Invalid datestr provided. Original error: {err}")
 
 
 # pointers to an equivalent date in both AD and BS
