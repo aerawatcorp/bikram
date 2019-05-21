@@ -218,6 +218,7 @@ class samwat:
         "%m": r"(?P<m>\d{2})",
         "%-m": r"(?P<m>\d{1,2})",
 
+        "%y": r"(?P<sy>\d{2})",
         "%Y": r"(?P<y>\d{4})",
 
         "%B": rf"(?P<ml>{month_name_re_fragment})",
@@ -264,6 +265,9 @@ class samwat:
         if 'ml' in date_dict:
             ml = date_dict['ml']
             date_dict['m'] = month_name_to_numbers[ml]
+
+        if 'sy' in date_dict:
+            date_dict['y'] = int(f"20{date_dict['sy']}")
 
         datetuple = list(map(int, [date_dict['y'], date_dict['m'], date_dict['day']]))
         return cls(*datetuple)
