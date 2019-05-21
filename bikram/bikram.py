@@ -201,22 +201,6 @@ class samwat:
         '''
         return convert_ad_to_bs(ad_date)
 
-    @classmethod
-    def from_iso(cls, datestr: str):
-        '''
-        Naive way to parse date from a ISO 8601 like BS date string
-        and return `bikram.samwat` instance.
-
-        Expects a date string formatted as
-        `YYYY<delimeter>MM<delimeter>DD` and returns a `bikram.samwat`
-        instance for that date string. The default delimeter is a hyphen `-` but
-        you may pass anything as the second argument.
-        '''
-        try:
-            return cls.parse(datestr, "%Y-%m-%d")
-        except ValueError as err:
-            raise ValueError(f"Invalid datestr provided. Original error: {err}")
-
     _code_patterns = {
         "%d": r"(?P<day>\d{2})",
         "%-d": r"(?P<day>\d{1,2})",
@@ -267,6 +251,43 @@ class samwat:
 
     @classmethod
     def parse(cls, datestr: str, parsestr: str):
+        """
+        parse bikram samwat date string and return a `bikram.samwat` instance.
+
+        - "%d": zero padded day of month, 07
+        - "%-d": padded day of month, 7
+
+        - "%dne": zero-padded day of month in devanagari digits, ०७
+        - "%-dne": day of month in devanagari digits, ७
+
+        - "%m": zero-padded month number, 01
+        - "%-m": month number, 1
+
+        - "%mne": zero-added month number in devanagari digits, ०१
+        - "%-mne": month number in devanagari digits, १
+
+        - "%y": two digit year, 73 implies 2073
+        - "%Y": four digit year, 2073
+
+        - "%yne": two digit year in devanagari digits, ७३ implies २०७३
+        - "%Yne": four digit year in devanagari digits, २०७३
+
+        - "%B": name of bikram samwat months in English spelling, English spelling short
+            (abbr. by first three letters), Devanagari spelling. Any one of the list below:
+
+        ```
+            [
+                'वैशाख', 'जेष्ठ', 'आषाढ़', 'श्रावण', 'भाद्र', 'आश्विन', 'कार्तिक',
+                'मंसिर', 'पौष', 'माघ', 'फाल्गुन', 'चैत्र',
+
+                'Baisakh', 'Jestha', 'Ashadh', 'Shrawan', 'Bhadra', 'Ashwin', 'Kartik',
+                'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra',
+
+                'Bai', 'Jes', 'Ash', 'Shr', 'Bha', 'Ash', 'Kar',
+                'Man', 'Pou', 'Mag', 'Fal', 'Cha',
+            ]
+        ```
+        """
         codes = cls._code_re.findall(parsestr)
 
         unique_codes = list(map(lambda c: c.replace("%", "").replace("-", ""), codes))
@@ -310,6 +331,17 @@ class samwat:
 
         datetuple = list(map(int, [date_dict['y'], date_dict['m'], date_dict['day']]))
         return cls(*datetuple)
+
+    @classmethod
+    def from_iso(cls, datestr: str):
+        '''
+        Naive way to parse date from a ISO8601 (YYYY-MM-DD) BS date
+        string and return `bikram.samwat` instance.
+        '''
+        try:
+            return cls.parse(datestr, "%Y-%m-%d")
+        except ValueError as err:
+            raise ValueError(f"Invalid datestr provided. Original error: {err}")
 
 
 # pointers to an equivalent date in both AD and BS

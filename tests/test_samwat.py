@@ -41,9 +41,7 @@ class TestSamwat(unittest.TestCase):
         self.assertEqual(samwat.from_iso("2073-07-28"), samwat(2073, 7, 28))
 
         invalid_datestrs = [
-            # "2073-07,28",
-            # "2073-07.28",
-            # "2073,07,28",
+            "207307,28",
             "rubbish",
         ]
 
