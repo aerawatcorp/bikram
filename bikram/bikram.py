@@ -13,6 +13,7 @@ objects. Please import them as follows:
 """
 
 import re
+from typing import List
 from functools import total_ordering
 from datetime import date, timedelta
 from .constants import (
@@ -226,6 +227,21 @@ class samwat:
     _code_re = re.compile(r"(?P<code>%-?\w)")
 
     @classmethod
+    def _get_pattern_from_codes(cls, codes: List[str]):
+        patterns = []
+
+        for code in codes:
+            try:
+                pattern_str = cls._code_patterns[code]
+            except KeyError:
+                raise ValueError(f"Invalid code: {code}")
+
+            patterns.append(pattern_str)
+
+        pattern = re.compile(r"-?.".join(patterns))
+        return pattern
+
+    @classmethod
     def parse(cls, datestr: str, parsestr: str):
         codes = cls._code_re.findall(parsestr)
 
@@ -237,26 +253,16 @@ class samwat:
         # patterns are usually static across a codebase -- this is a
         # micro optimization to avoid calling re.compile for same
         # parsestr all the time
-        if parsestr in _PATTERNS_CACHE:
+        # and using try..except is faster if `parse` is being called many times
+        try:
             pattern = _PATTERNS_CACHE[parsestr]
-        else:
-            patterns = []
-
-            for code in codes:
-                try:
-                    pattern_str = cls._code_patterns[code]
-                except KeyError:
-                    raise ValueError(f"Invalid code: {code}")
-
-                patterns.append(pattern_str)
-
-            pattern = re.compile(r"-?.".join(patterns))
+        except KeyError:
+            pattern = cls._get_pattern_from_codes(codes)
             _PATTERNS_CACHE[parsestr] = pattern
 
         match = pattern.match(datestr)
-
         if not match:
-            raise ValueError(f"Value for {code} not found in {datestr}")
+            raise ValueError(f"Could not match {parsestr} with {datestr}")
 
         date_dict = match.groupdict()
         if not len(date_dict):
