@@ -144,10 +144,11 @@ class TestSamwat(unittest.TestCase):
 
         # test that exception is raised while trying to subtract something other than
         # datetime.timedelta, datetime.date and bikram.samwat
-        with self.assertRaisesRegex(
-            TypeError, 'Subtraction only supported for datetime.timedelta, '
-                        'datetime.date and bikram.samwat types, not'):
-
+        _msg = (
+            'Subtraction only supported for datetime.timedelta, '
+            'datetime.date and bikram.samwat types, not'
+        )
+        with self.assertRaisesRegex(TypeError, _msg):
             self.bs_date - 10
 
     def test__rsub__(self):

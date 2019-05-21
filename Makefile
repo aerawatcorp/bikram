@@ -38,14 +38,14 @@ clean-test: ## remove test and coverage artifacts
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/bikram.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ bikram
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
+	pipenv run sphinx-apidoc -o docs/ bikram
+	pipenv run $(MAKE) -C docs clean
+	pipenv run $(MAKE) -C docs html
 
 release: clean ## package and upload a release
-	python setup.py sdist
-	twine upload dist/*
+	pipenv run python setup.py sdist
+	pipenv run twine upload dist/*
 
 sdist: clean ## package
-	python setup.py sdist
+	pipenv run python setup.py sdist
 	ls -l dist
