@@ -5,15 +5,52 @@ from collections import OrderedDict
 
 __all__ = [
     'month_name', 'month_name_dev', 'month_number_dev', 'ENG_TO_DEV_DIGITS',
-    'BS_YEAR_TO_MONTHS'
+    'BS_YEAR_TO_MONTHS', 'month_name_to_numbers',
+]
+
+month_name_dev = [
+    '', 'वैशाख', 'जेष्ठ', 'आषाढ़', 'श्रावण', 'भाद्र', 'आश्विन', 'कार्तिक',
+    'मंसिर', 'पौष', 'माघ', 'फाल्गुन', 'चैत्र',
 ]
 
 month_name = [
     '', 'Baisakh', 'Jestha', 'Ashadh', 'Shrawan', 'Bhadra', 'Ashwin', 'Kartik',
-    'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra']
-month_name_dev = [
-    '', 'वैशाख', 'जेष्ठ', 'आषाढ़', 'श्रावण', 'भाद्र', 'आश्विन', 'कार्तिक',
-    'मंसिर', 'पौष', 'माघ', 'फाल्गुन', 'चैत्र']
+    'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra',
+]
+_month_name_lower = list(map(str.lower, month_name))
+
+
+month_name_abbr = [
+    '', 'Bai', 'Jes', 'Ash', 'Shr', 'Bha', 'Ash', 'Kar',
+    'Man', 'Pou', 'Mag', 'Fal', 'Cha',
+]
+_month_name_abbr_lower = list(map(str.lower, month_name_abbr))
+
+
+_all_month_names = (
+    month_name[1:] +
+    _month_name_lower[1:] +
+    month_name_abbr[1:] +
+    _month_name_abbr_lower[1:] +
+    month_name_dev[1:]
+)
+
+month_name_re_fragment = r"|".join(_all_month_names)
+
+_month_names_list = [
+    month_name,
+    _month_name_lower,
+    month_name_abbr,
+    _month_name_abbr_lower,
+    month_name_dev,
+]
+
+month_name_to_numbers = {}
+for name_list in _month_names_list:
+    for i, mname in enumerate(name_list):
+        month_name_to_numbers[mname] = i
+
+
 month_number_dev = ['', '१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२']
 
 ENG_TO_DEV_DIGITS = {

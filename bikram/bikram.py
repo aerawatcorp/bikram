@@ -11,9 +11,15 @@ objects. Please import them as follows:
 >>> from datetime import date, timedelta
 
 """
+
+import re
 from functools import total_ordering
 from datetime import date, timedelta
-from .constants import BS_YEAR_TO_MONTHS
+from .constants import (
+    BS_YEAR_TO_MONTHS,
+    month_name_re_fragment,
+    month_name_to_numbers,
+)
 
 
 __all__ = ['samwat', 'convert_ad_to_bs', 'convert_bs_to_ad']
@@ -188,6 +194,69 @@ class samwat:
         Expects a `datetime.date` then returns an equivalent `bikram.samwat` instance
         '''
         return convert_ad_to_bs(ad_date)
+
+    @classmethod
+    def from_iso(cls, datestr, delimeter="-"):
+        '''
+        Naive way to parse date from a string.
+
+        Expects a date string formatted as
+        `YYYY<delimeter>MM<delimeter>DD` and returns a `bikram.samwat`
+        instance for that date string. The default delimeter is a hyphen `-` but
+        you may pass anything as the second argument.
+        '''
+        year, month, day = datestr.split(delimeter)
+        return cls(*list(map(int, [year, month, day])))
+
+    _code_patterns = {
+        "%d": r"(?P<day>\d{2})",
+        "%-d": r"(?P<day>\d{1,2})",
+
+        "%m": r"(?P<m>\d{2})",
+        "%-m": r"(?P<m>\d{1,2})",
+
+        "%Y": r"(?P<y>\d{4})",
+
+        "%B": rf"(?P<ml>{month_name_re_fragment})",
+    }
+    _code_re = re.compile(r"(?P<code>%-?\w)")
+
+    @classmethod
+    def parse(cls, datestr: str, pattern: str):
+        codes = cls._code_re.findall(pattern)
+
+        unique_codes = list(map(lambda c: c.replace("%", "").replace("-", ""), codes))
+
+        if len(set(unique_codes)) != 3:
+            raise ValueError("Invalid number of date codes in the parse pattern")
+
+        patterns = []
+
+        for code in codes:
+
+            try:
+                pattern_str = cls._code_patterns[code]
+            except KeyError:
+                raise ValueError(f"Invalid code: {code}")
+
+            patterns.append(pattern_str)
+
+        pattern = r"-?.".join(patterns)
+        match = re.match(pattern, datestr)
+
+        if not match:
+            raise ValueError(f"Value for {code} not found in {datestr}")
+
+        date_dict = match.groupdict()
+        if not len(date_dict):
+            raise ValueError("Something is wrong with the pattern")
+
+        if 'ml' in date_dict:
+            ml = date_dict['ml']
+            date_dict['m'] = month_name_to_numbers[ml]
+
+        datetuple = list(map(int, [date_dict['y'], date_dict['m'], date_dict['day']]))
+        return cls(*datetuple)
 
 
 # pointers to an equivalent date in both AD and BS
