@@ -39,12 +39,18 @@ class TestSamwat(unittest.TestCase):
 
     def test_from_iso(self):
         self.assertEqual(samwat.from_iso("2073-07-28"), samwat(2073, 7, 28))
-        self.assertEqual(samwat.from_iso("2073/07/28", "/"), samwat(2073, 7, 28))
-        self.assertEqual(samwat.from_iso("2073,07,28", ","), samwat(2073, 7, 28))
 
-        with self.assertRaises(ValueError):
-            samwat.from_iso("2073,07,28")
-            samwat.from_iso("rubbish")
+        invalid_datestrs = [
+            # "2073-07,28",
+            # "2073-07.28",
+            # "2073,07,28",
+            "rubbish",
+        ]
+
+        for datestr in invalid_datestrs:
+            with self.subTest(datestr=datestr):
+                with self.assertRaisesRegex(ValueError, "Invalid datestr provided."):
+                    samwat.from_iso(datestr)
 
     def test_parse(self):
         patterns = [
@@ -66,6 +72,12 @@ class TestSamwat(unittest.TestCase):
             ("2073,kartik,28", "%Y,%B,%d"),
             ("2073,kar,28", "%Y,%B,%d"),
             ("2073,कार्तिक,28", "%Y,%B,%d"),
+
+            ("2073 07 28", "%Y %m %d"),
+
+            # test devanagari digits
+            ("२०७३ ०७ २८", "%Yne %mne %dne"),
+            ("२०७३ ७ २८", "%Yne %-mne %dne"),
         ]
         for datestr, pattern in patterns:
             with self.subTest(datestr=datestr, pattern=pattern):

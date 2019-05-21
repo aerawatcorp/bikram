@@ -53,9 +53,12 @@ for name_list in _month_names_list:
 
 month_number_dev = ['', '१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२']
 
+dev_digits_re_fragment = r'[०१२३४५६७८९]'
+
 ENG_TO_DEV_DIGITS = {
     0: '०', 1: '१', 2: '२', 3: '३', 4: '४', 5: '५', 6: '६', 7: '७', 8: '८', 9: '९'
 }
+DEV_TO_ENG_DIGITS = {v: k for k, v in ENG_TO_DEV_DIGITS.items()}
 
 # The keys are years in Bikram Samwat and the values are
 # tuple containing the number of days for each month.

@@ -20,6 +20,8 @@ from .constants import (
     BS_YEAR_TO_MONTHS,
     month_name_re_fragment,
     month_name_to_numbers,
+    dev_digits_re_fragment,
+    DEV_TO_ENG_DIGITS,
 )
 
 
@@ -200,31 +202,43 @@ class samwat:
         return convert_ad_to_bs(ad_date)
 
     @classmethod
-    def from_iso(cls, datestr, delimeter="-"):
+    def from_iso(cls, datestr: str):
         '''
-        Naive way to parse date from a string.
+        Naive way to parse date from a ISO 8601 like BS date string
+        and return `bikram.samwat` instance.
 
         Expects a date string formatted as
         `YYYY<delimeter>MM<delimeter>DD` and returns a `bikram.samwat`
         instance for that date string. The default delimeter is a hyphen `-` but
         you may pass anything as the second argument.
         '''
-        year, month, day = datestr.split(delimeter)
-        return cls(*list(map(int, [year, month, day])))
+        try:
+            return cls.parse(datestr, "%Y-%m-%d")
+        except ValueError as err:
+            raise ValueError(f"Invalid datestr provided. Original error: {err}")
 
     _code_patterns = {
         "%d": r"(?P<day>\d{2})",
         "%-d": r"(?P<day>\d{1,2})",
 
+        "%dne": rf"(?P<ned>{dev_digits_re_fragment}{{2}})",
+        "%-dne": rf"(?P<ned>{dev_digits_re_fragment}{{1,2}})",
+
         "%m": r"(?P<m>\d{2})",
         "%-m": r"(?P<m>\d{1,2})",
+
+        "%mne": rf"(?P<nem>{dev_digits_re_fragment}{{2}})",
+        "%-mne": rf"(?P<nem>{dev_digits_re_fragment}{{1,2}})",
 
         "%y": r"(?P<sy>\d{2})",
         "%Y": r"(?P<y>\d{4})",
 
+        "%yne": rf"(?P<ney>{dev_digits_re_fragment}{{2}})",
+        "%Yne": rf"(?P<ney>{dev_digits_re_fragment}{{4}})",
+
         "%B": rf"(?P<ml>{month_name_re_fragment})",
     }
-    _code_re = re.compile(r"(?P<code>%-?\w)")
+    _code_re = re.compile(r"(?P<code>%-?\w{1,3})")
 
     @classmethod
     def _get_pattern_from_codes(cls, codes: List[str]):
@@ -238,8 +252,18 @@ class samwat:
 
             patterns.append(pattern_str)
 
-        pattern = re.compile(r"-?.".join(patterns))
+        pattern = re.compile(r".".join(patterns))
         return pattern
+
+    @staticmethod
+    def _translate_number_from_devanagari(numberstr: str) -> int:
+        if not numberstr:
+            raise ValueError("Trying to translate invalid numberstr from devanagari")
+
+        digits = []
+        for dev_digit in numberstr:
+            digits.append(str(DEV_TO_ENG_DIGITS[dev_digit]))
+        return int("".join(digits))
 
     @classmethod
     def parse(cls, datestr: str, parsestr: str):
@@ -274,6 +298,15 @@ class samwat:
 
         if 'sy' in date_dict:
             date_dict['y'] = int(f"20{date_dict['sy']}")
+
+        if 'ney' in date_dict:
+            date_dict['y'] = cls._translate_number_from_devanagari(date_dict['ney'])
+
+        if 'nem' in date_dict:
+            date_dict['m'] = cls._translate_number_from_devanagari(date_dict['nem'])
+
+        if 'ned' in date_dict:
+            date_dict['day'] = cls._translate_number_from_devanagari(date_dict['ned'])
 
         datetuple = list(map(int, [date_dict['y'], date_dict['m'], date_dict['day']]))
         return cls(*datetuple)
