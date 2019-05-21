@@ -25,6 +25,9 @@ from .constants import (
 __all__ = ['samwat', 'convert_ad_to_bs', 'convert_bs_to_ad']
 
 
+_PATTERNS_CACHE = {}
+
+
 @total_ordering
 class samwat:
     '''
@@ -222,27 +225,34 @@ class samwat:
     _code_re = re.compile(r"(?P<code>%-?\w)")
 
     @classmethod
-    def parse(cls, datestr: str, pattern: str):
-        codes = cls._code_re.findall(pattern)
+    def parse(cls, datestr: str, parsestr: str):
+        codes = cls._code_re.findall(parsestr)
 
         unique_codes = list(map(lambda c: c.replace("%", "").replace("-", ""), codes))
 
         if len(set(unique_codes)) != 3:
             raise ValueError("Invalid number of date codes in the parse pattern")
 
-        patterns = []
+        # patterns are usually static across a codebase -- this is a
+        # micro optimization to avoid calling re.compile for same
+        # parsestr all the time
+        if parsestr in _PATTERNS_CACHE:
+            pattern = _PATTERNS_CACHE[parsestr]
+        else:
+            patterns = []
 
-        for code in codes:
+            for code in codes:
+                try:
+                    pattern_str = cls._code_patterns[code]
+                except KeyError:
+                    raise ValueError(f"Invalid code: {code}")
 
-            try:
-                pattern_str = cls._code_patterns[code]
-            except KeyError:
-                raise ValueError(f"Invalid code: {code}")
+                patterns.append(pattern_str)
 
-            patterns.append(pattern_str)
+            pattern = re.compile(r"-?.".join(patterns))
+            _PATTERNS_CACHE[parsestr] = pattern
 
-        pattern = r"-?.".join(patterns)
-        match = re.match(pattern, datestr)
+        match = pattern.match(datestr)
 
         if not match:
             raise ValueError(f"Value for {code} not found in {datestr}")
