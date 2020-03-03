@@ -171,7 +171,11 @@ class TestSamwat(unittest.TestCase):
         self.assertEqual(some_bs_date.ad, date(1995, 9, 17))
 
     def test__hash__(self):
-        self.assertEqual(hash(self.bs_date), -8898535882159624709)
+        if sys.version_info < (3, 8):
+            bs_hash = -8898535882159624709
+        else:
+            bs_hash = 4148514807028171473
+        self.assertEqual(hash(self.bs_date), bs_hash)
 
     def test__eq__(self):
         self.assertTrue(samwat(2073, 3, 4) == samwat(2073, 3, 4))
