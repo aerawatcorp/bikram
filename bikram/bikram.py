@@ -155,6 +155,14 @@ class samwat:
         return samwat(*args)
 
     def strftime(self, formatstr: str):
+        """
+        Format a samwat object to specified date string.
+        The format strings are similar to those accepted by :func:`~bikram.samwat.parse`
+        with the following additions/modifications:
+
+        - "%B": Formats to Nepali month name(Example: Baisakh, Jestha, etc.)
+        - "%Bne": Formats to Nepali Devnagari month name(Example:'वैशाख', 'जेष्ठ',  etc.)
+        """
         formatted = formatstr
         matches = [match.group() for match in self._code_re.finditer(formatstr)]
 

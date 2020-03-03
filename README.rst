@@ -34,6 +34,7 @@ Features
 * Date operations, i.e. addition/subtraction,
   supported with :code:`datetime.date` and :code:`datetime.timedelta` within range.
 * Supports comparison with :code:`datetime.date` and :code:`datetime.timedelta` objects.
+* Supports string formatting of `samwat` dates.
 
 
 Caveats
