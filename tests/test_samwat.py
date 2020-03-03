@@ -171,7 +171,11 @@ class TestSamwat(unittest.TestCase):
         self.assertEqual(some_bs_date.ad, date(1995, 9, 17))
 
     def test__hash__(self):
-        self.assertEqual(hash(self.bs_date), -8898535882159624709)
+        if sys.version_info < (3, 8):
+            bs_hash = -8898535882159624709
+        else:
+            bs_hash = 4148514807028171473
+        self.assertEqual(hash(self.bs_date), bs_hash)
 
     def test__eq__(self):
         self.assertTrue(samwat(2073, 3, 4) == samwat(2073, 3, 4))
@@ -195,3 +199,36 @@ class TestDateConverters(unittest.TestCase):
     def test_convert_bs_to_ad(self):
         self.assertEqual(convert_bs_to_ad(samwat(2072, 7, 5)), date(2015, 10, 22))
         self.assertEqual(convert_bs_to_ad(samwat(2071, 6, 14)), date(2014, 9, 30))
+
+
+class TestSamwatFormatters(unittest.TestCase):
+    '''
+    Test formatters for samwat class
+    '''
+
+    def setUp(self):
+        self.bs_date = samwat(2076, 1, 4)
+
+    def test_formatters(self):
+        # २०७६ ०१ ०४
+        formats = [
+            ("%y-%m-%d", "76-01-04"),
+            ("%Y-%B-%d", "2076-Baisakh-04"),
+
+            ("%Y-%-m-%d", "2076- 1-04"),
+            ("%Y-%m-%-d", "2076-01- 4"),
+
+            ("%yne-%mne-%dne", "७६-०१-०४"),
+            ("%Yne-%mne-%d", "२०७६-०१-04"),
+
+            ("%Yne/%-mne/%dne", "२०७६/ १/०४"),
+            ("%Yne/%mne/%-dne", "२०७६/०१/ ४"),
+
+            ("%Yne %B %dne", "२०७६ Baisakh ०४"),
+            ("%Yne %Bne %-dne", "२०७६ वैशाख  ४"),
+            ("%Yne %Bne %dne", "२०७६ वैशाख ०४"),
+        ]
+
+        for formatstr, formatted_str in formats:
+            self.assertEqual(self.bs_date.strftime(formatstr), formatted_str)
+            print('PASSED', formatstr, formatted_str)
