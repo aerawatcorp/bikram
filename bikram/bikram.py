@@ -20,8 +20,11 @@ from .constants import (
     BS_YEAR_TO_MONTHS,
     month_name_re_fragment,
     month_name_to_numbers,
+    month_number_month_name_map,
+    month_number_dev_name_map,
     dev_digits_re_fragment,
-    DEV_TO_ENG_DIGITS,
+    DEV_TO_ENG_DIGITS_TRANSTABLE as DEV_ENG_TRANS,
+    ENG_TO_DEV_DIGITS_TRANSTABLE as ENG_DEV_TRANS,
 )
 
 
@@ -78,6 +81,29 @@ class samwat:
     '''
     __slots__ = ('year', 'month', 'day', '_ad')
 
+    _to_str_converters = {
+        "%d": lambda obj: str(obj.day).zfill(2),
+        "%-d": lambda obj: str(obj.day).rjust(2),
+
+        "%dne": lambda obj: str(obj.day).zfill(2).translate(ENG_DEV_TRANS),
+        "%-dne": lambda obj: str(obj.day).rjust(2).translate(ENG_DEV_TRANS),
+
+        "%m": lambda obj: str(obj.month).zfill(2),
+        "%-m": lambda obj: str(obj.month).rjust(2),
+
+        "%mne": lambda obj: str(obj.month).zfill(2).translate(ENG_DEV_TRANS),
+        "%-mne": lambda obj: str(obj.month).rjust(2).translate(ENG_DEV_TRANS),
+
+        "%y": lambda obj: str(obj.year)[2:],
+        "%Y": lambda obj: str(obj.year),
+
+        "%yne": lambda obj: str(obj.year)[2:].translate(ENG_DEV_TRANS),
+        "%Yne": lambda obj: str(obj.year).translate(ENG_DEV_TRANS),
+
+        "%B": lambda obj: month_number_month_name_map[obj.month],
+        "%Bne": lambda obj: month_number_dev_name_map[obj.month],
+    }
+
     def __init__(self, year, month, day, ad=None):
         self.year = year
         self.month = month
@@ -127,6 +153,21 @@ class samwat:
         '''
         args = [year or self.year, month or self.month, day or self.day]
         return samwat(*args)
+
+    def strftime(self, formatstr: str):
+        formatted = formatstr
+        matches = [match.group() for match in self._code_re.finditer(formatstr)]
+
+        for match in matches:
+            try:
+                converter = self._to_str_converters[match]
+            except KeyError:
+                raise ValueError(f"Invalid date pattern {match}")
+            try:
+                formatted = formatted.replace(match, converter(self))
+            except KeyError:
+                raise ValueError(f"Invalid value for month")
+        return formatted
 
     def __repr__(self):
         return 'samwat({self.year}, {self.month}, {self.day})'.format(self=self)
@@ -222,6 +263,7 @@ class samwat:
 
         "%B": rf"(?P<ml>{month_name_re_fragment})",
     }
+
     _code_re = re.compile(r"(?P<code>%-?\w{1,3})")
 
     @classmethod
@@ -243,11 +285,7 @@ class samwat:
     def _translate_number_from_devanagari(numberstr: str) -> int:
         if not numberstr:
             raise ValueError("Trying to translate invalid numberstr from devanagari")
-
-        digits = []
-        for dev_digit in numberstr:
-            digits.append(str(DEV_TO_ENG_DIGITS[dev_digit]))
-        return int("".join(digits))
+        return int(numberstr.translate(DEV_ENG_TRANS))
 
     @classmethod
     def parse(cls, datestr: str, parsestr: str):
@@ -290,7 +328,12 @@ class samwat:
         """
         codes = cls._code_re.findall(parsestr)
 
-        unique_codes = list(map(lambda c: c.replace("%", "").replace("-", ""), codes))
+        # Check if three different patterns, each for year, month and days are present.
+        # Just check if there are y, (m or b) and d or not
+        unique_codes = [
+            c.replace("%", "").replace("-", "").replace("ne", "").lower()
+            for c in codes
+        ]
 
         if len(set(unique_codes)) != 3:
             raise ValueError("Invalid number of date codes in the parse pattern")
