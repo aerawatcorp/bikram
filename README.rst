@@ -28,7 +28,7 @@ Getting started
 Features
 --------
 
-* Convert Bikram Samwat dates to AD and vice versa.
+* Convert Bikram Samwat dates to AD and vice versa in a few line of codes.
   Intended to be useful for Nepali software developers.
 * Well tested and readable source code.
 * Date operations, i.e. addition/subtraction,
