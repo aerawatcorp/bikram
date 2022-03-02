@@ -6,7 +6,7 @@ from collections import OrderedDict
 __all__ = [
     'month_name', 'month_name_dev', 'month_number_dev', 'ENG_TO_DEV_DIGITS',
     'BS_YEAR_TO_MONTHS', 'month_name_to_numbers', 'month_number_month_name_map',
-    'month_number_dev_name_map',
+    'month_number_dev_name_map', 'month_number_shahmukhi_name_map',
 ]
 
 month_name_dev = [
@@ -20,6 +20,13 @@ month_name = [
     'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra',
 ]
 month_number_month_name_map = dict(enumerate(month_name[1:], 1))
+
+month_name_shahmukhi = [
+    '', 'بیساکھ', 'جیٹھ', 'ہاڑ', 'ساون', 'بھادوں', 'اسو', 'کتا',
+    'مگھر', 'پوہ', 'ماگھ', 'پھگن', 'چیت',
+]
+month_number_shahmukhi_name_map = dict(enumerate(month_name_shahmukhi[1:], 1))
+
 
 _month_name_lower = list(map(str.lower, month_name))
 
