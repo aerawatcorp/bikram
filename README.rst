@@ -6,7 +6,7 @@ I no longer have the time to work on this package so this is as good as abandone
 
 I recommend the excellent https://github.com/dxillar/nepali-datetime package instead.
 
-This repo and the PYPI package will still stay up but will be no newer releases.
+This repo and the PYPI package will still stay up but there will be no newer releases.
 
 
 bikram
