@@ -22,6 +22,7 @@ from .constants import (
     month_name_to_numbers,
     month_number_month_name_map,
     month_number_dev_name_map,
+    month_number_shahmukhi_name_map,
     dev_digits_re_fragment,
     DEV_TO_ENG_DIGITS_TRANSTABLE as DEV_ENG_TRANS,
     ENG_TO_DEV_DIGITS_TRANSTABLE as ENG_DEV_TRANS,
@@ -102,6 +103,7 @@ class samwat:
 
         "%B": lambda obj: month_number_month_name_map[obj.month],
         "%Bne": lambda obj: month_number_dev_name_map[obj.month],
+        "%S": lambda obj: month_number_shahmukhi_name_map[obj.month],
     }
 
     def __init__(self, year, month, day, ad=None):
@@ -161,6 +163,7 @@ class samwat:
         with the following additions/modifications:
 
         - "%B": Formats to Nepali month name(Example: Baisakh, Jestha, etc.)
+        - "%S": Formats to Punjabi Shahmukhi month name(Example: بیساکھ, جیٹھ, etc.)
         - "%Bne": Formats to Nepali Devnagari month name(Example:'वैशाख', 'जेष्ठ',  etc.)
         """
         formatted = formatstr

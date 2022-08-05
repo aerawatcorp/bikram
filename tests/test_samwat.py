@@ -214,6 +214,7 @@ class TestSamwatFormatters(unittest.TestCase):
         formats = [
             ("%y-%m-%d", "76-01-04"),
             ("%Y-%B-%d", "2076-Baisakh-04"),
+            ("%Y-%S-%d", "2076-بیساکھ-04"),
 
             ("%Y-%-m-%d", "2076- 1-04"),
             ("%Y-%m-%-d", "2076-01- 4"),
