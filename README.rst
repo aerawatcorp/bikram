@@ -1,7 +1,16 @@
 ===============================
-Python Bikram Samwat
+Not actively maintained
 ===============================
 
+I no longer have the time to work on this package so this is as good as abandoned.
+
+I recommend the excellent https://github.com/dxillar/nepali-datetime package instead.
+
+This repo and the PYPI package will still stay up but will be no newer releases.
+
+
+bikram
+------
 
 .. image:: https://img.shields.io/pypi/v/bikram.svg
         :target: https://pypi.python.org/pypi/bikram
