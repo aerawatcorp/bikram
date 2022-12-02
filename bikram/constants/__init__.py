@@ -1,13 +1,14 @@
 """
 This file has the necessary constants for date conversion.
 """
-from collections import OrderedDict
 
 __all__ = [
     'month_name', 'month_name_dev', 'month_number_dev', 'ENG_TO_DEV_DIGITS',
     'BS_YEAR_TO_MONTHS', 'month_name_to_numbers', 'month_number_month_name_map',
     'month_number_dev_name_map', 'month_number_shahmukhi_name_map',
 ]
+
+from .calendar_data import BS_YEAR_TO_MONTHS
 
 month_name_dev = [
     '', 'वैशाख', 'जेष्ठ', 'आषाढ़', 'श्रावण', 'भाद्र', 'आश्विन', 'कार्तिक',
