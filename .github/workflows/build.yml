@@ -30,8 +30,9 @@
 name: Build and Generate Coverage
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - 'master'
 
 permissions:
   contents: read
