@@ -1,1 +1,19 @@
+Refactored from travis
+# Config file for automatic testing at travis-ci.org
 
+#language: python
+
+#python:
+#  - "3.6"
+
+#matrix:
+#  fast_finish: true
+
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+#install: "make pipenv"
+
+# command to run tests using coverage, e.g. python setup.py test
+#script: "make coverage"
+
+#after_success:
+#- codecov
