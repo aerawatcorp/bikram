@@ -4,8 +4,8 @@ bikram
 .. image:: https://img.shields.io/pypi/v/bikram.svg
         :target: https://pypi.python.org/pypi/bikram
 
-.. image:: https://img.shields.io/travis/poudel/bikram.svg
-        :target: https://travis-ci.org/poudel/bikram
+.. image:: https://img.shields.io/travis/aerawatcorp/bikram.svg
+        :target: https://travis-ci.org/aerawatcorp/bikram
 
 .. image:: https://readthedocs.org/projects/bikram/badge/?version=latest
         :target: https://bikram.readthedocs.io/en/latest/?badge=latest
