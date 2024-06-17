@@ -233,3 +233,38 @@ class TestSamwatFormatters(unittest.TestCase):
         for formatstr, formatted_str in formats:
             self.assertEqual(self.bs_date.strftime(formatstr), formatted_str)
             print('PASSED', formatstr, formatted_str)
+
+
+class TestSamwatDateValues(unittest.TestCase):
+    '''
+    Test Year, Month and Day values for samwat class
+    '''
+
+    def setUp(self):
+        self.invalid_values = [
+            {"year": 3001, "month": 1, "day": 1},
+            {"year": 2000, "month": 13, "day": 1},
+            {"year": 2000, "month": 1, "day": 32},
+        ]
+        self.invalid_data_types = [
+
+            {"year": 2000, "month": 4, "day": 21.1},
+            {"year": 2000, "month": 4.34, "day": 13},
+            {"year": "two", "month": 4.34, "day": 13},
+            {"year": 2000, "month": 4, "day": "thirteen"},
+            {"year": 2000, "month": "three", "day": 20},
+            {"year": 2000, "month": 4, "day": 0},
+            {"year": 2000, "month": 0, "day": 13},
+        ]
+
+    def test_samwat_date(self):
+        for invalid_value in self.invalid_values:
+            with self.subTest(invalid_value=invalid_value):
+                with self.assertRaisesRegex(ValueError, 'Invalid'):
+                    samwat(**invalid_value)
+                    print(invalid_value)
+        for invalid_value in self.invalid_data_types:
+            with self.subTest(invalid_value=invalid_value):
+                with self.assertRaisesRegex(TypeError, 'Invalid'):
+                    samwat(**invalid_value)
+                    print('PASSED ', invalid_value)

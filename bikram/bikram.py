@@ -26,6 +26,8 @@ from .constants import (
     dev_digits_re_fragment,
     DEV_TO_ENG_DIGITS_TRANSTABLE as DEV_ENG_TRANS,
     ENG_TO_DEV_DIGITS_TRANSTABLE as ENG_DEV_TRANS,
+    FIRST_AD_YEAR,
+    LAST_AD_YEAR
 )
 
 
@@ -33,6 +35,46 @@ __all__ = ['samwat', 'convert_ad_to_bs', 'convert_bs_to_ad']
 
 
 _PATTERNS_CACHE = {}
+
+
+_FIRST_AD_DATE = {"year": FIRST_AD_YEAR, "month": 1, "day": 1}
+_LAST_BS_DATE = {"year": LAST_AD_YEAR, "month": 12, "day": BS_YEAR_TO_MONTHS[LAST_AD_YEAR][-1]}
+
+
+def _check_int_value(value):
+    if isinstance(value, int) and value > 0:
+        return value
+    else:
+        raise TypeError(
+            'Invalid year, month or day Expected Natural Number "int" got {}: {}'.format(value, type(value).__name__))
+
+
+def _get_max_days_in_month(year, month):
+    try:
+        days = BS_YEAR_TO_MONTHS[year][month]
+        if not days:
+            raise ValueError('Invalid month value')
+        return days
+    except KeyError:
+        raise ValueError(f'Invalid year, supported range is {FIRST_AD_YEAR}-{LAST_AD_YEAR}')
+    except IndexError:
+        raise ValueError('Invalid month value')
+
+
+def _check_date_values(year, month, day):
+    _check_int_value(year)
+    _check_int_value(month)
+    _check_int_value(day)
+
+    if year < FIRST_AD_YEAR or year > LAST_AD_YEAR:
+        raise ValueError(f'Invalid year, supported range is {FIRST_AD_YEAR}-{LAST_AD_YEAR}')
+
+    if month > 12:
+        raise ValueError('Invalid month, supported range is 1-12')
+
+    if day > _get_max_days_in_month(year, month):
+        raise ValueError('Invalid day, supported range is 1-{}'.format(_get_max_days_in_month(year, month)))
+    return year, month, day
 
 
 @total_ordering
@@ -107,6 +149,7 @@ class samwat:
     }
 
     def __init__(self, year, month, day, ad=None):
+        year, month, day = _check_date_values(year, month, day)
         self.year = year
         self.month = month
         self.day = day

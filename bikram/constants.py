@@ -181,3 +181,6 @@ BS_YEAR_TO_MONTHS = OrderedDict((
     (2089, (None, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30)),
     (2090, (None, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30)),
 ))
+
+FIRST_AD_YEAR = next(iter(BS_YEAR_TO_MONTHS))
+LAST_AD_YEAR = next(reversed(BS_YEAR_TO_MONTHS))
