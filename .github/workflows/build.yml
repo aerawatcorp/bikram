@@ -36,14 +36,13 @@ on:
 
 permissions:
   contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.6.15'
     - name: Install dependencies and environment
