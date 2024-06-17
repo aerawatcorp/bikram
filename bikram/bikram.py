@@ -41,6 +41,7 @@ _FIRST_AD_DATE = {"year": FIRST_AD_YEAR, "month": 1, "day": 1}
 _LAST_BS_DATE = {"year": LAST_AD_YEAR, "month": 12, "day": BS_YEAR_TO_MONTHS[LAST_AD_YEAR][-1]}
 
 
+# @TODO: 0 is considered as TypeError ? , shouldn't it be a ValueError ??
 def _check_int_value(value):
     if isinstance(value, int) and value > 0:
         return value
@@ -50,15 +51,20 @@ def _check_int_value(value):
 
 
 def _get_max_days_in_month(year, month):
-    try:
-        days = BS_YEAR_TO_MONTHS[year][month]
-        if not days:
-            raise ValueError('Invalid month value')
-        return days
-    except KeyError:
+    if month < 1 or month > 12:
+        raise ValueError('Invalid month value, supported range is 1-12')
+    if year < FIRST_AD_YEAR or year > LAST_AD_YEAR:
         raise ValueError(f'Invalid year, supported range is {FIRST_AD_YEAR}-{LAST_AD_YEAR}')
-    except IndexError:
-        raise ValueError('Invalid month value')
+    return BS_YEAR_TO_MONTHS[year][month]
+    # try:
+    #     days = BS_YEAR_TO_MONTHS[year][month]
+    #     if not days:
+    #         raise ValueError('Invalid month value')
+    #     return days
+    # except KeyError:
+    #     raise ValueError(f'Invalid year, supported range is {FIRST_AD_YEAR}-{LAST_AD_YEAR}')
+    # except IndexError:
+    #     raise ValueError('Invalid month value')
 
 
 def _check_date_values(year, month, day):
@@ -69,7 +75,7 @@ def _check_date_values(year, month, day):
     if year < FIRST_AD_YEAR or year > LAST_AD_YEAR:
         raise ValueError(f'Invalid year, supported range is {FIRST_AD_YEAR}-{LAST_AD_YEAR}')
 
-    if month > 12:
+    if month < 1 or month > 12:
         raise ValueError('Invalid month, supported range is 1-12')
 
     if day > _get_max_days_in_month(year, month):

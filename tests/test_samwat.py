@@ -255,6 +255,7 @@ class TestSamwatDateValues(unittest.TestCase):
             {"year": 2000, "month": "three", "day": 20},
             {"year": 2000, "month": 4, "day": 0},
             {"year": 2000, "month": 0, "day": 13},
+            {"year": 2000, "month": 0, "day": 0},
         ]
 
     def test_samwat_date(self):
