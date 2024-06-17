@@ -3,3 +3,6 @@
 *$py.class
 .env
 .venv
+dist/
+build/
+bikram.egg-info/
