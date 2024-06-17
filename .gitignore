@@ -6,3 +6,4 @@
 dist/
 build/
 bikram.egg-info/
+docs/_build/
