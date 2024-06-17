@@ -52,5 +52,5 @@ jobs:
         #pip install build
     - name: Run the coverage
       run: make coverage
-    - name: CodeCov
-      run: codecov
+    # - name: CodeCov
+    #   run: codecov
