@@ -1,5 +1,5 @@
 from .bikram import *   # NOQA
 
 __author__ = """keshaB Paudel"""
-__email__ = 'self@keshab.net'
-__version__ = '2.0.0'
+__email__ = 'aerawatcorp+bikram_python@gmail.com'
+__version__ = '2.1.3'
