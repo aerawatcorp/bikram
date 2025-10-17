@@ -7,3 +7,5 @@ dist/
 build/
 bikram.egg-info/
 docs/_build/
+pypi_token.txt
+.pypirc
