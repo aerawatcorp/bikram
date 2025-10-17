@@ -2,6 +2,12 @@
 History
 =======
 
+2.1.3 to 2.1.4 (2025-10-17)
+---------------------------
+* Few changes have been made to make the date map accurate as reported by several contributors.
+* 2082 and 2083 BS Date changes and confirmed as per the Nepal RajPatra
+* 2.1.4 - Bump to push the change log
+
 2.1.0 to 2.1.3 (2024-06-20)
 ---------------------------
 * Few changes have been made to make the date map accurate as reported by several contributors.
